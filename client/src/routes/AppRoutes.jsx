@@ -1,16 +1,22 @@
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
 
 import AdminLayout from "../layouts/AdminLayout";
 import Login from "../pages/Login/Login";
 import Products from "../pages/Products/Products";
+import ProtectedRoute from "./ProtectedRoute";
+import PublicRoute from "./PublicRoute";
 
 function AppRoutes() {
   return (
     <Routes>
-      <Route path="/login" element={<Login />} />
+      <Route element={<PublicRoute />}>
+        <Route path="/login" element={<Login />} />
+      </Route>
 
-      <Route element={<AdminLayout />}>
-        <Route path="/products" element={<Products />} />
+      <Route element={<ProtectedRoute />}>
+        <Route element={<AdminLayout />}>
+          <Route path="/products" element={<Products />} />
+        </Route>
       </Route>
 
       <Route
