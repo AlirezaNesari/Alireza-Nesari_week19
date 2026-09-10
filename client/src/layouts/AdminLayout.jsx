@@ -1,26 +1,33 @@
-import { Outlet, useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
+import { Outlet } from "react-router-dom";
+
+import styles from "./AdminLayout.module.css";
 
 function AdminLayout() {
-  const { logout } = useAuth();
-  const navigate = useNavigate();
-
-  const handleLogout = () => {
-    logout();
-    navigate("/login", { replace: true });
-  };
-
   return (
-    <div>
-      <header>
-        <h1>Admin Panel</h1>
+    <div className={styles.layout} dir="rtl">
+      <header className={styles.header}>
+        <div className={styles.searchBox}>
+          <input
+            type="text"
+            placeholder="جستجو کالا"
+          />
 
-        <button onClick={handleLogout}>
-          Logout
-        </button>
+          <span className={styles.searchIcon}>⌕</span>
+        </div>
+
+        <div className={styles.userProfile}>
+          <div className={styles.avatar}>
+            م
+          </div>
+
+          <div className={styles.userInfo}>
+            <span>میلاد عظمی</span>
+            <small>مدیر</small>
+          </div>
+        </div>
       </header>
 
-      <main>
+      <main className={styles.content}>
         <Outlet />
       </main>
     </div>

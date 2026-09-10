@@ -1,20 +1,19 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-
-import { loginUser } from "../../services/authService";
-import { useAuth } from "../../context/AuthContext";
 import logo from "../../assets/Union.png";
-import styles from "./Login.module.css";
+import { registerUser } from "../../services/authService";
 
-function Login() {
+import styles from "./Register.module.css";
+
+function Register() {
   const [formData, setFormData] = useState({
     username: "",
     password: "",
+    confirmPassword: "",
   });
 
   const [error, setError] = useState("");
 
-  const { login } = useAuth();
   const navigate = useNavigate();
 
   const changeHandler = (event) => {
@@ -29,18 +28,22 @@ function Login() {
   const submitHandler = async (event) => {
     event.preventDefault();
 
+    if (formData.password !== formData.confirmPassword) {
+      setError("رمز عبور و تکرار رمز عبور یکسان نیستند.");
+      return;
+    }
+
     try {
       setError("");
 
-      const data = await loginUser(formData);
+      await registerUser({
+        username: formData.username,
+        password: formData.password,
+      });
 
-      login(data.token);
-
-      navigate("/products");
+      navigate("/login");
     } catch (error) {
-      setError(
-        error.response?.data?.message || "نام کاربری یا رمز عبور اشتباه است.",
-      );
+      setError(error.response?.data?.message || "ثبت نام انجام نشد.");
     }
   };
 
@@ -50,8 +53,9 @@ function Login() {
 
       <div className={styles.card}>
         <img src={logo} alt="Union" className={styles.logo} />
+        
 
-        <h2 className={styles.title}>فرم ورود</h2>
+        <h2 className={styles.title}>فرم ثبت نام</h2>
 
         <form className={styles.form} onSubmit={submitHandler}>
           <input
@@ -70,23 +74,31 @@ function Login() {
             onChange={changeHandler}
           />
 
+          <input
+            type="password"
+            name="confirmPassword"
+            placeholder="تکرار رمز عبور"
+            value={formData.confirmPassword}
+            onChange={changeHandler}
+          />
+
           {error && <p className={styles.error}>{error}</p>}
 
           <button type="submit" className={styles.submitButton}>
-            ورود
+            ثبت نام
           </button>
         </form>
 
         <button
           type="button"
           className={styles.link}
-          onClick={() => navigate("/register")}
+          onClick={() => navigate("/login")}
         >
-          ایجاد حساب کاربری!
+          حساب کاربری دارید؟
         </button>
       </div>
     </div>
   );
 }
 
-export default Login;
+export default Register;
