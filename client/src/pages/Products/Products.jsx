@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 
 import DeleteModal from "../../components/DeleteModal/DeleteModal";
 
@@ -11,10 +12,14 @@ import { getProducts } from "../../services/productService";
 import styles from "./Products.module.css";
 
 function Products() {
+  const [searchParams, setSearchParams] = useSearchParams();
+
   const [products, setProducts] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState(null);
 
-  const [page, setPage] = useState(1);
+  const [page, setPage] = useState(
+    Number(searchParams.get("page")) || 1
+  );
 
   const [pagination, setPagination] = useState({
     totalProducts: 0,
@@ -25,6 +30,14 @@ function Products() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
+  const search = searchParams.get("name") || "";
+
+  useEffect(() => {
+    const currentPage = Number(searchParams.get("page")) || 1;
+
+    setPage(currentPage);
+  }, [searchParams]);
+
   useEffect(() => {
     const fetchProducts = async () => {
       try {
@@ -34,6 +47,9 @@ function Products() {
         const data = await getProducts({
           page,
           limit: 10,
+          ...(search && {
+            name: search,
+          }),
         });
 
         setProducts(data.data);
@@ -53,7 +69,7 @@ function Products() {
     };
 
     fetchProducts();
-  }, [page]);
+  }, [page, search]);
 
   const openDeleteModal = (product) => {
     setSelectedProduct(product);
@@ -74,19 +90,31 @@ function Products() {
       return;
     }
 
-    setPage(newPage);
+    setSearchParams({
+      ...(search && {
+        name: search,
+      }),
+      page: newPage.toString(),
+    });
   };
 
   return (
     <div className={styles.page}>
       <div className={styles.pageHeader}>
         <div className={styles.titleWrapper}>
-          <img src={setting} alt="setting" className={styles.setting} />
+          <img
+            src={setting}
+            alt="setting"
+            className={styles.setting}
+          />
 
           <h1>مدیریت کالا</h1>
         </div>
 
-        <button type="button" className={styles.addButton}>
+        <button
+          type="button"
+          className={styles.addButton}
+        >
           افزودن محصول
         </button>
       </div>
@@ -134,15 +162,23 @@ function Products() {
                           type="button"
                           className={styles.editButton}
                         >
-                          <img src={edit} alt="edit" />
+                          <img
+                            src={edit}
+                            alt="edit"
+                          />
                         </button>
 
                         <button
                           type="button"
                           className={styles.deleteButton}
-                          onClick={() => openDeleteModal(product)}
+                          onClick={() =>
+                            openDeleteModal(product)
+                          }
                         >
-                          <img src={trash} alt="trash" />
+                          <img
+                            src={trash}
+                            alt="trash"
+                          />
                         </button>
                       </div>
                     </td>
@@ -179,7 +215,11 @@ function Products() {
 
             <button
               type="button"
-              className={page === 1 ? styles.activePage : ""}
+              className={
+                page === 1
+                  ? styles.activePage
+                  : ""
+              }
               onClick={() => changePage(1)}
             >
               ۱
