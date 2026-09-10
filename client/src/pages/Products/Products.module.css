@@ -1,5 +1,5 @@
-*{
-    font-family: Vazirmatn;
+* {
+  font-family: Vazirmatn;
 }
 .page {
   width: 100%;
@@ -9,7 +9,6 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-
   margin-bottom: 12px;
 }
 
@@ -21,41 +20,30 @@
 
 .titleWrapper h1 {
   margin: 0;
-
   color: #242424;
-
   font-size: 18px;
   font-weight: 700;
 }
 
-.settingsButton {
+.setting {
   width: 23px;
   height: 23px;
-
   padding: 0;
-
   border: none;
   background: transparent;
-
   color: #555;
-
   cursor: pointer;
-
   font-size: 16px;
 }
 
 .addButton {
   width: 96px;
   height: 34px;
-
   border: none;
   border-radius: 8px;
-
   background: #55a5ed;
   color: #ffffff;
-
   cursor: pointer;
-
   font-family: inherit;
   font-size: 11px;
   font-weight: 700;
@@ -63,14 +51,10 @@
 
 .tableWrapper {
   width: 100%;
-
   min-height: 438px;
-
   background: #ffffff;
-
   border: 1px solid #e4e4e4;
   border-radius: 18px;
-
   overflow: hidden;
 }
 
@@ -100,13 +84,15 @@
   color: #464646;
 }
 
-.table th:nth-child(1),
-.table td:nth-child(1) {
-  width: 22%;
+.table th:nth-child(5),
+.table td:nth-child(5) {
+  width: 18%;
+  text-align: center;
+
 }
 
-.table th:nth-child(2),
-.table td:nth-child(2) {
+.table th:nth-child(4),
+.table td:nth-child(4) {
   width: 18%;
   text-align: center;
 }
@@ -117,42 +103,34 @@
   text-align: center;
 }
 
-.table th:nth-child(4),
-.table td:nth-child(4) {
-  width: 27%;
+.table th:nth-child(2),
+.table td:nth-child(2) {
+  width: 18%;
   text-align: center;
 }
 
-.table th:nth-child(5),
-.table td:nth-child(5) {
-  width: 15%;
-  text-align: left;
+.table th:nth-child(1),
+.table td:nth-child(1) {
+  width: 18%;
+  text-align: center;
 }
 
-.table tbody tr:last-child td {
-  border-bottom: none;
-}
 
 .actions {
   display: flex;
   align-items: center;
-  justify-content: flex-start;
-
+  justify-content: center;
   gap: 9px;
 }
 
 .editButton,
 .deleteButton {
-  width: 18px;
-  height: 18px;
-
+  width: 20px;
+  height: 20px;
   padding: 0;
-
   border: none;
   background: transparent;
-
   cursor: pointer;
-
   font-size: 16px;
   line-height: 1;
 }
@@ -167,7 +145,6 @@
 
 .pagination {
   margin-top: 16px;
-
   display: flex;
   justify-content: center;
   align-items: center;
@@ -178,25 +155,18 @@
 .pagination button {
   width: 28px;
   height: 28px;
-
   padding: 0;
-
   border: 1px solid #dddddd;
   border-radius: 50%;
-
   background: #ffffff;
-
   color: #8a8a8a;
-
   cursor: pointer;
-
   font-family: inherit;
   font-size: 11px;
 }
 
 .pagination .activePage {
   border-color: #55a5ed;
-
   background: #55a5ed;
   color: #ffffff;
 }

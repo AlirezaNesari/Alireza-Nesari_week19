@@ -1,3 +1,10 @@
+import { useState } from "react";
+
+import DeleteModal from "../../components/DeleteModal/DeleteModal";
+import edit from "../../assets/edit.png";
+import trash from "../../assets/trash.png";
+import setting from "../../assets/setting.png";
+
 import styles from "./Products.module.css";
 
 const products = [
@@ -46,24 +53,31 @@ const products = [
 ];
 
 function Products() {
+  const [selectedProduct, setSelectedProduct] = useState(null);
+
+  const openDeleteModal = (product) => {
+    setSelectedProduct(product);
+  };
+
+  const closeDeleteModal = () => {
+    setSelectedProduct(null);
+  };
+
+  const confirmDelete = () => {
+    console.log("Delete product:", selectedProduct);
+
+    closeDeleteModal();
+  };
+
   return (
     <div className={styles.page}>
       <div className={styles.pageHeader}>
         <div className={styles.titleWrapper}>
+          <img src={setting} alt="setting" className={styles.setting} />
           <h1>مدیریت کالا</h1>
-
-          <button
-            type="button"
-            className={styles.settingsButton}
-          >
-            ⚙
-          </button>
         </div>
 
-        <button
-          type="button"
-          className={styles.addButton}
-        >
+        <button type="button" className={styles.addButton}>
           افزودن محصول
         </button>
       </div>
@@ -93,18 +107,16 @@ function Products() {
 
                 <td>
                   <div className={styles.actions}>
-                    <button
-                      type="button"
-                      className={styles.editButton}
-                    >
-                      ♢
+                    <button type="button" className={styles.editButton}>
+                      <img src={edit} alt="edit" />
                     </button>
 
                     <button
                       type="button"
                       className={styles.deleteButton}
+                      onClick={() => openDeleteModal(product)}
                     >
-                      ♧
+                      <img src={trash} alt="trash" />
                     </button>
                   </div>
                 </td>
@@ -114,18 +126,22 @@ function Products() {
         </table>
       </div>
 
-    <div className={styles.pagination}>
-  <button
-    type="button"
-    className={styles.activePage}
-  >
-    ۱
-  </button>
+      <div className={styles.pagination}>
+        <button type="button">۳</button>
 
-  <button type="button">۲</button>
+        <button type="button">۲</button>
 
-  <button type="button">۳</button>
-</div>
+        <button type="button" className={styles.activePage}>
+          ۱
+        </button>
+      </div>
+
+      <DeleteModal
+        isOpen={Boolean(selectedProduct)}
+        productName={selectedProduct?.name}
+        onClose={closeDeleteModal}
+        onConfirm={confirmDelete}
+      />
     </div>
   );
 }
