@@ -170,7 +170,60 @@
   background: #55a5ed;
   color: #ffffff;
 }
+.message {
+  min-height: 538px;
 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: #ffffff;
+
+  border: 1px solid #e4e4e4;
+  border-radius: 18px;
+
+  color: #777;
+
+  font-size: 13px;
+}
+
+.error {
+  min-height: 100px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: #ffffff;
+
+  border: 1px solid #ffd6dc;
+  border-radius: 18px;
+
+  color: #ef4056;
+
+  font-size: 13px;
+}
+
+.pagination button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.pageNumber {
+  width: 28px;
+  height: 28px;
+
+  border-radius: 50%;
+
+  background: #55a5ed;
+  color: #ffffff;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 11px;
+}
 @media (max-width: 700px) {
   .tableWrapper {
     overflow-x: auto;

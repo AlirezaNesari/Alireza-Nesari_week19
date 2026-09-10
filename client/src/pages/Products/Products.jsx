@@ -1,59 +1,59 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import DeleteModal from "../../components/DeleteModal/DeleteModal";
+
 import edit from "../../assets/edit.png";
 import trash from "../../assets/trash.png";
 import setting from "../../assets/setting.png";
 
+import { getProducts } from "../../services/productService";
+
 import styles from "./Products.module.css";
 
-const products = [
-  {
-    id: 1,
-    name: "تیشرت طرح انگولار",
-    quantity: 293,
-    price: "۹۰ هزار تومان",
-    productId: "90uf9g9h7895467g974",
-  },
-  {
-    id: 2,
-    name: "تیشرت طرح انگولار",
-    quantity: 293,
-    price: "۹۰ هزار تومان",
-    productId: "90uf9g9h7895467g974",
-  },
-  {
-    id: 3,
-    name: "تیشرت طرح انگولار",
-    quantity: 293,
-    price: "۹۰ هزار تومان",
-    productId: "90uf9g9h7895467g974",
-  },
-  {
-    id: 4,
-    name: "تیشرت طرح انگولار",
-    quantity: 293,
-    price: "۹۰ هزار تومان",
-    productId: "90uf9g9h7895467g974",
-  },
-  {
-    id: 5,
-    name: "تیشرت طرح انگولار",
-    quantity: 293,
-    price: "۹۰ هزار تومان",
-    productId: "90uf9g9h7895467g974",
-  },
-  {
-    id: 6,
-    name: "تیشرت طرح انگولار",
-    quantity: 293,
-    price: "۹۰ هزار تومان",
-    productId: "90uf9g9h7895467g974",
-  },
-];
-
 function Products() {
+  const [products, setProducts] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState(null);
+
+  const [page, setPage] = useState(1);
+
+  const [pagination, setPagination] = useState({
+    totalProducts: 0,
+    totalPages: 1,
+    limit: 10,
+  });
+
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        setLoading(true);
+        setError("");
+
+        const data = await getProducts({
+          page,
+          limit: 10,
+        });
+
+        setProducts(data.data);
+
+        setPagination({
+          totalProducts: data.totalProducts,
+          totalPages: data.totalPages,
+          limit: data.limit,
+        });
+      } catch (error) {
+        console.error(error);
+
+        setError("دریافت محصولات با خطا مواجه شد.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, [page]);
 
   const openDeleteModal = (product) => {
     setSelectedProduct(product);
@@ -69,11 +69,20 @@ function Products() {
     closeDeleteModal();
   };
 
+  const changePage = (newPage) => {
+    if (newPage < 1 || newPage > pagination.totalPages) {
+      return;
+    }
+
+    setPage(newPage);
+  };
+
   return (
     <div className={styles.page}>
       <div className={styles.pageHeader}>
         <div className={styles.titleWrapper}>
           <img src={setting} alt="setting" className={styles.setting} />
+
           <h1>مدیریت کالا</h1>
         </div>
 
@@ -82,59 +91,102 @@ function Products() {
         </button>
       </div>
 
-      <div className={styles.tableWrapper}>
-        <table className={styles.table}>
-          <thead>
-            <tr>
-              <th>نام کالا</th>
-              <th>موجودی</th>
-              <th>قیمت</th>
-              <th>شناسه کالا</th>
-              <th>عملیات</th>
-            </tr>
-          </thead>
+      {loading && (
+        <div className={styles.message}>
+          در حال دریافت محصولات...
+        </div>
+      )}
 
-          <tbody>
-            {products.map((product) => (
-              <tr key={product.id}>
-                <td>{product.name}</td>
+      {error && (
+        <div className={styles.error}>
+          {error}
+        </div>
+      )}
 
-                <td>{product.quantity}</td>
+      {!loading && !error && (
+        <>
+          <div className={styles.tableWrapper}>
+            <table className={styles.table}>
+              <thead>
+                <tr>
+                  <th>نام کالا</th>
+                  <th>موجودی</th>
+                  <th>قیمت</th>
+                  <th>شناسه کالا</th>
+                  <th>عملیات</th>
+                </tr>
+              </thead>
 
-                <td>{product.price}</td>
+              <tbody>
+                {products.map((product) => (
+                  <tr key={product.id}>
+                    <td>{product.name}</td>
 
-                <td>{product.productId}</td>
+                    <td>{product.quantity}</td>
 
-                <td>
-                  <div className={styles.actions}>
-                    <button type="button" className={styles.editButton}>
-                      <img src={edit} alt="edit" />
-                    </button>
+                    <td>{product.price}</td>
 
-                    <button
-                      type="button"
-                      className={styles.deleteButton}
-                      onClick={() => openDeleteModal(product)}
-                    >
-                      <img src={trash} alt="trash" />
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+                    <td>{product.id}</td>
 
-      <div className={styles.pagination}>
-        <button type="button">۳</button>
+                    <td>
+                      <div className={styles.actions}>
+                        <button
+                          type="button"
+                          className={styles.editButton}
+                        >
+                          <img src={edit} alt="edit" />
+                        </button>
 
-        <button type="button">۲</button>
+                        <button
+                          type="button"
+                          className={styles.deleteButton}
+                          onClick={() => openDeleteModal(product)}
+                        >
+                          <img src={trash} alt="trash" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
 
-        <button type="button" className={styles.activePage}>
-          ۱
-        </button>
-      </div>
+                {products.length === 0 && (
+                  <tr>
+                    <td colSpan="5">
+                      محصولی پیدا نشد.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+
+          <div className={styles.pagination}>
+            <button
+              type="button"
+              onClick={() => changePage(3)}
+              disabled={pagination.totalPages < 3}
+            >
+              ۳
+            </button>
+
+            <button
+              type="button"
+              onClick={() => changePage(2)}
+              disabled={pagination.totalPages < 2}
+            >
+              ۲
+            </button>
+
+            <button
+              type="button"
+              className={page === 1 ? styles.activePage : ""}
+              onClick={() => changePage(1)}
+            >
+              ۱
+            </button>
+          </div>
+        </>
+      )}
 
       <DeleteModal
         isOpen={Boolean(selectedProduct)}
