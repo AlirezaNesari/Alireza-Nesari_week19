@@ -12,7 +12,7 @@ import trash from "../../assets/trash.png";
 
 import setting from "../../assets/setting.png";
 
-import { getProducts } from "../../services/productService";
+import { deleteProduct, getProducts } from "../../services/productService";
 
 import styles from "./Products.module.css";
 import EditProductModal from "../../components/EditProductModal/EditProductModal";
@@ -96,10 +96,17 @@ function Products() {
     setSelectedProduct(null);
   };
 
-  const confirmDelete = () => {
-    console.log("Delete product:", selectedProduct);
+  const confirmDelete = async () => {
+    if (!selectedProduct) return;
 
-    closeDeleteModal();
+    try {
+      await deleteProduct(selectedProduct.id);
+
+      closeDeleteModal();
+      setRefreshKey((current) => current + 1);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const changePage = (newPage) => {
