@@ -31,6 +31,8 @@ function Products() {
   const [error, setError] = useState("");
 
   const search = searchParams.get("name") || "";
+  const minPrice = searchParams.get("minPrice") || "";
+  const maxPrice = searchParams.get("maxPrice") || "";
 
   useEffect(() => {
     const currentPage = Number(searchParams.get("page")) || 1;
@@ -49,6 +51,12 @@ function Products() {
           limit: 10,
           ...(search && {
             name: search,
+          }),
+          ...(minPrice && {
+            minPrice,
+          }),
+          ...(maxPrice && {
+            maxPrice,
           }),
         });
 
@@ -69,7 +77,7 @@ function Products() {
     };
 
     fetchProducts();
-  }, [page, search]);
+  }, [page, search, minPrice, maxPrice]);
 
   const openDeleteModal = (product) => {
     setSelectedProduct(product);
@@ -90,12 +98,11 @@ function Products() {
       return;
     }
 
-    setSearchParams({
-      ...(search && {
-        name: search,
-      }),
-      page: newPage.toString(),
-    });
+    const params = new URLSearchParams(searchParams);
+
+    params.set("page", newPage.toString());
+
+    setSearchParams(params);
   };
 
   return (
