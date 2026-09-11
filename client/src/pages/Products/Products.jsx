@@ -15,6 +15,7 @@ import setting from "../../assets/setting.png";
 import { getProducts } from "../../services/productService";
 
 import styles from "./Products.module.css";
+import EditProductModal from "../../components/EditProductModal/EditProductModal";
 
 function Products() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -22,12 +23,11 @@ function Products() {
   const [products, setProducts] = useState([]);
 
   const [selectedProduct, setSelectedProduct] = useState(null);
-
+  const [selectedEditProduct, setSelectedEditProduct] = useState(null);
   const [isProductModalOpen, setIsProductModalOpen] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
 
   const [page, setPage] = useState(Number(searchParams.get("page")) || 1);
-
   const [pagination, setPagination] = useState({
     totalProducts: 0,
     totalPages: 1,
@@ -165,7 +165,11 @@ function Products() {
 
                     <td>
                       <div className={styles.actions}>
-                        <button type="button" className={styles.editButton}>
+                        <button
+                          type="button"
+                          className={styles.editButton}
+                          onClick={() => setSelectedEditProduct(product)}
+                        >
                           <img src={edit} alt="edit" />
                         </button>
 
@@ -223,6 +227,16 @@ function Products() {
         productName={selectedProduct?.name}
         onClose={closeDeleteModal}
         onConfirm={confirmDelete}
+      />
+
+      <EditProductModal
+        isOpen={Boolean(selectedEditProduct)}
+        product={selectedEditProduct}
+        onClose={() => setSelectedEditProduct(null)}
+        onSuccess={() => {
+          setSelectedEditProduct(null);
+          setRefreshKey((current) => current + 1);
+        }}
       />
 
       <ProductModal
