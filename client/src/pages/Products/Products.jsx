@@ -1,10 +1,15 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+
 import { useSearchParams } from "react-router-dom";
+
+import ProductModal from "../../components/ProductModal/ProductModal";
 
 import DeleteModal from "../../components/DeleteModal/DeleteModal";
 
 import edit from "../../assets/edit.png";
+
 import trash from "../../assets/trash.png";
+
 import setting from "../../assets/setting.png";
 
 import { getProducts } from "../../services/productService";
@@ -15,11 +20,13 @@ function Products() {
   const [searchParams, setSearchParams] = useSearchParams();
 
   const [products, setProducts] = useState([]);
+
   const [selectedProduct, setSelectedProduct] = useState(null);
 
-  const [page, setPage] = useState(
-    Number(searchParams.get("page")) || 1
-  );
+  const [isProductModalOpen, setIsProductModalOpen] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
+
+  const [page, setPage] = useState(Number(searchParams.get("page")) || 1);
 
   const [pagination, setPagination] = useState({
     totalProducts: 0,
@@ -28,10 +35,13 @@ function Products() {
   });
 
   const [loading, setLoading] = useState(true);
+
   const [error, setError] = useState("");
 
   const search = searchParams.get("name") || "";
+
   const minPrice = searchParams.get("minPrice") || "";
+
   const maxPrice = searchParams.get("maxPrice") || "";
 
   useEffect(() => {
@@ -69,7 +79,6 @@ function Products() {
         });
       } catch (error) {
         console.error(error);
-
         setError("دریافت محصولات با خطا مواجه شد.");
       } finally {
         setLoading(false);
@@ -77,7 +86,7 @@ function Products() {
     };
 
     fetchProducts();
-  }, [page, search, minPrice, maxPrice]);
+  }, [page, search, minPrice, maxPrice, refreshKey]);
 
   const openDeleteModal = (product) => {
     setSelectedProduct(product);
@@ -109,11 +118,7 @@ function Products() {
     <div className={styles.page}>
       <div className={styles.pageHeader}>
         <div className={styles.titleWrapper}>
-          <img
-            src={setting}
-            alt="setting"
-            className={styles.setting}
-          />
+          <img src={setting} alt="setting" className={styles.setting} />
 
           <h1>مدیریت کالا</h1>
         </div>
@@ -121,22 +126,17 @@ function Products() {
         <button
           type="button"
           className={styles.addButton}
+          onClick={() => setIsProductModalOpen(true)}
         >
           افزودن محصول
         </button>
       </div>
 
       {loading && (
-        <div className={styles.message}>
-          در حال دریافت محصولات...
-        </div>
+        <div className={styles.message}>در حال دریافت محصولات...</div>
       )}
 
-      {error && (
-        <div className={styles.error}>
-          {error}
-        </div>
-      )}
+      {error && <div className={styles.error}>{error}</div>}
 
       {!loading && !error && (
         <>
@@ -165,27 +165,16 @@ function Products() {
 
                     <td>
                       <div className={styles.actions}>
-                        <button
-                          type="button"
-                          className={styles.editButton}
-                        >
-                          <img
-                            src={edit}
-                            alt="edit"
-                          />
+                        <button type="button" className={styles.editButton}>
+                          <img src={edit} alt="edit" />
                         </button>
 
                         <button
                           type="button"
                           className={styles.deleteButton}
-                          onClick={() =>
-                            openDeleteModal(product)
-                          }
+                          onClick={() => openDeleteModal(product)}
                         >
-                          <img
-                            src={trash}
-                            alt="trash"
-                          />
+                          <img src={trash} alt="trash" />
                         </button>
                       </div>
                     </td>
@@ -194,9 +183,7 @@ function Products() {
 
                 {products.length === 0 && (
                   <tr>
-                    <td colSpan="5">
-                      محصولی پیدا نشد.
-                    </td>
+                    <td colSpan="5">محصولی پیدا نشد.</td>
                   </tr>
                 )}
               </tbody>
@@ -222,11 +209,7 @@ function Products() {
 
             <button
               type="button"
-              className={
-                page === 1
-                  ? styles.activePage
-                  : ""
-              }
+              className={page === 1 ? styles.activePage : ""}
               onClick={() => changePage(1)}
             >
               ۱
@@ -240,6 +223,12 @@ function Products() {
         productName={selectedProduct?.name}
         onClose={closeDeleteModal}
         onConfirm={confirmDelete}
+      />
+
+      <ProductModal
+        isOpen={isProductModalOpen}
+        onClose={() => setIsProductModalOpen(false)}
+        onSuccess={() => setRefreshKey((current) => current + 1)}
       />
     </div>
   );
