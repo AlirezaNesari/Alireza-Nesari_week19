@@ -23,7 +23,6 @@
   display: flex;
   align-items: center;
   padding: 0 14px 0 18px;
-
   direction: rtl;
 }
 
@@ -52,9 +51,9 @@
 }
 
 .userProfile {
-  width: 125px;
+  width: 192px;
   height: 100%;
-  padding: 0 12px;
+  padding: 10px;
   border-right: 1px solid #eeeeee;
   display: flex;
   align-items: center;
@@ -66,13 +65,9 @@
   height: 31px;
   flex-shrink: 0;
   border-radius: 50%;
-  background: #d9e2e8;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #555;
-  font-size: 12px;
-  font-weight: 700;
 }
 
 .userInfo {
@@ -97,6 +92,19 @@
   max-width: calc(100% - 32px);
   margin: 30px auto 0;
 }
+.logoutButton {
+  border: none;
+  background: transparent;
+  color: #ef4056;
+  font-size: 15px;
+  cursor: pointer;
+  padding: 6px 26px 5px 0px;
+  font-weight: bold;
+}
+
+.logoutButton:hover {
+  opacity: 0.75;
+}
 
 @media (max-width: 700px) {
   .header {
@@ -104,13 +112,19 @@
   }
 
   .userProfile {
-    width: 112px;
+    width: 172px;
   }
   .userInfo span {
-  font-size: 9px;
-}
+    font-size: 9px;
+  }
 
   .content {
     margin-top: 20px;
+  }
+  .logoutButton {
+    
+    font-size: 11px;
+    font-weight: bold;
+   
   }
 }

@@ -1,12 +1,14 @@
 import { useEffect, useState } from "react";
-import { Outlet, useSearchParams } from "react-router-dom";
+import { Outlet, useNavigate, useSearchParams } from "react-router-dom";
 
 import ali from "../assets/ali.png";
-
+import { useAuth } from "../context/AuthContext";
 import styles from "./AdminLayout.module.css";
 
 function AdminLayout() {
   const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const { logout } = useAuth();
 
   const [searchValue, setSearchValue] = useState(
     searchParams.get("name") || ""
@@ -34,6 +36,11 @@ function AdminLayout() {
     setSearchParams(params);
   };
 
+  const handleLogout = () => {
+    logout();
+    navigate("/login", { replace: true });
+  };
+
   return (
     <div className={styles.layout} dir="rtl">
       <header className={styles.header}>
@@ -59,6 +66,14 @@ function AdminLayout() {
             <span>علیرضا نثاری</span>
             <small>مدیر</small>
           </div>
+
+          <button
+            type="button"
+            className={styles.logoutButton}
+            onClick={handleLogout}
+          >
+            خروج
+          </button>
         </div>
       </header>
 
