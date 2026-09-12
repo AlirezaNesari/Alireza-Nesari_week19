@@ -1,8 +1,27 @@
+import { useState } from "react";
 import styles from "./DeleteModal.module.css";
+
 import logo from "../../assets/close.png";
 
 function DeleteModal({ isOpen, onClose, onConfirm, productName }) {
+  const [loading, setLoading] = useState(false);
+
   if (!isOpen) return null;
+
+  const handleConfirm = async () => {
+    try {
+      setLoading(true);
+      await onConfirm();
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleClose = () => {
+    if (loading) return;
+
+    onClose();
+  };
 
   return (
     <div className={styles.overlay}>
@@ -11,22 +30,29 @@ function DeleteModal({ isOpen, onClose, onConfirm, productName }) {
           <img src={logo} alt="Union" />
         </div>
 
-        <p className={styles.message}>آیا از حذف این محصول مطمئنید؟</p>
+        <p className={styles.message}>
+          آیا از حذف این محصول مطمئنید؟
+        </p>
 
-        {productName && <p className={styles.productName}>{productName}</p>}
+        {productName && (
+          <p className={styles.productName}>{productName}</p>
+        )}
 
         <div className={styles.actions}>
           <button
             type="button"
             className={styles.deleteButton}
-            onClick={onConfirm}
+            onClick={handleConfirm}
+            disabled={loading}
           >
-            حذف
+            {loading ? "در حال حذف..." : "حذف"}
           </button>
+
           <button
             type="button"
             className={styles.cancelButton}
-            onClick={onClose}
+            onClick={handleClose}
+            disabled={loading}
           >
             لغو
           </button>

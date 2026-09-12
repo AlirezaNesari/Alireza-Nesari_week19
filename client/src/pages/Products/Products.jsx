@@ -26,6 +26,7 @@ function Products() {
   const [selectedEditProduct, setSelectedEditProduct] = useState(null);
   const [isProductModalOpen, setIsProductModalOpen] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
+  const [deleteError, setDeleteError] = useState("");
 
   const [page, setPage] = useState(Number(searchParams.get("page")) || 1);
   const [pagination, setPagination] = useState({
@@ -100,12 +101,15 @@ function Products() {
     if (!selectedProduct) return;
 
     try {
+      setDeleteError("");
+
       await deleteProduct(selectedProduct.id);
 
       closeDeleteModal();
       setRefreshKey((current) => current + 1);
     } catch (error) {
       console.error(error);
+      setDeleteError("حذف محصول با خطا مواجه شد.");
     }
   };
 
@@ -228,7 +232,7 @@ function Products() {
           </div>
         </>
       )}
-
+      {deleteError && <div className={styles.error}>{deleteError}</div>}
       <DeleteModal
         isOpen={Boolean(selectedProduct)}
         productName={selectedProduct?.name}
