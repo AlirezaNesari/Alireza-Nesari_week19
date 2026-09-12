@@ -206,29 +206,19 @@ function Products() {
           </div>
 
           <div className={styles.pagination}>
-            <button
-              type="button"
-              onClick={() => changePage(3)}
-              disabled={pagination.totalPages < 3}
-            >
-              ۳
-            </button>
-
-            <button
-              type="button"
-              onClick={() => changePage(2)}
-              disabled={pagination.totalPages < 2}
-            >
-              ۲
-            </button>
-
-            <button
-              type="button"
-              className={page === 1 ? styles.activePage : ""}
-              onClick={() => changePage(1)}
-            >
-              ۱
-            </button>
+            {Array.from(
+              { length: pagination.totalPages },
+              (_, index) => index + 1,
+            ).map((pageNumber) => (
+              <button
+                key={pageNumber}
+                type="button"
+                className={page === pageNumber ? styles.activePage : ""}
+                onClick={() => changePage(pageNumber)}
+              >
+                {pageNumber}
+              </button>
+            ))}
           </div>
         </>
       )}
