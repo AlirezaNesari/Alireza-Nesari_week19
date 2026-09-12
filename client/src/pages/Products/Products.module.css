@@ -204,26 +204,9 @@
   font-size: 13px;
 }
 
-.pagination button:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-}
 
-.pageNumber {
-  width: 28px;
-  height: 28px;
 
-  border-radius: 50%;
 
-  background: #55a5ed;
-  color: #ffffff;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  font-size: 11px;
-}
 
 @media (max-width: 700px) {
   .tableWrapper {
