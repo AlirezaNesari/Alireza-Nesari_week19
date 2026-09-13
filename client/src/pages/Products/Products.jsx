@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
@@ -24,7 +25,6 @@ function Products() {
   const [selectedEditProduct, setSelectedEditProduct] = useState(null);
 
   const [isProductModalOpen, setIsProductModalOpen] = useState(false);
-
   const [refreshKey, setRefreshKey] = useState(0);
   const [deleteError, setDeleteError] = useState("");
 
@@ -113,6 +113,44 @@ function Products() {
     setSearchParams(params);
   };
 
+  const handlePriceFilter = (event) => {
+    event.preventDefault();
+
+    const formData = new FormData(event.currentTarget);
+
+    const newMinPrice = formData.get("minPrice")?.trim() || "";
+    const newMaxPrice = formData.get("maxPrice")?.trim() || "";
+
+    const params = new URLSearchParams(searchParams);
+
+    if (newMinPrice) {
+      params.set("minPrice", newMinPrice);
+    } else {
+      params.delete("minPrice");
+    }
+
+    if (newMaxPrice) {
+      params.set("maxPrice", newMaxPrice);
+    } else {
+      params.delete("maxPrice");
+    }
+
+    params.set("page", "1");
+
+    setSearchParams(params);
+  };
+
+  const clearPriceFilter = () => {
+    const params = new URLSearchParams(searchParams);
+
+    params.delete("minPrice");
+    params.delete("maxPrice");
+
+    params.set("page", "1");
+
+    setSearchParams(params);
+  };
+
   return (
     <div className={styles.page}>
       <div className={styles.pageHeader}>
@@ -134,6 +172,41 @@ function Products() {
           افزودن محصول
         </button>
       </div>
+
+      <form
+        className={styles.priceFilter}
+        onSubmit={handlePriceFilter}
+      >
+        <input
+          type="number"
+          name="minPrice"
+          placeholder="حداقل قیمت"
+          defaultValue={minPrice}
+          min="0"
+        />
+
+        <input
+          type="number"
+          name="maxPrice"
+          placeholder="حداکثر قیمت"
+          defaultValue={maxPrice}
+          min="0"
+        />
+
+        <button type="submit">
+          اعمال فیلتر
+        </button>
+
+        {(minPrice || maxPrice) && (
+          <button
+            type="button"
+            className={styles.clearFilterButton}
+            onClick={clearPriceFilter}
+          >
+            حذف فیلتر
+          </button>
+        )}
+      </form>
 
       {loading && (
         <div className={styles.message}>
@@ -274,3 +347,4 @@ function Products() {
 }
 
 export default Products;
+

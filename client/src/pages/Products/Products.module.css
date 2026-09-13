@@ -204,6 +204,47 @@
   font-size: 13px;
 }
 
+.priceFilter {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.priceFilter input {
+  width: 130px;
+  height: 34px;
+  padding: 0 10px;
+  border: 1px solid #dddddd;
+  border-radius: 8px;
+  outline: none;
+  font-family: inherit;
+  font-size: 11px;
+  direction: rtl;
+}
+
+.priceFilter input:focus {
+  border-color: #55a5ed;
+}
+
+.priceFilter button {
+  height: 34px;
+  padding: 0 14px;
+  border: none;
+  border-radius: 8px;
+  background: #55a5ed;
+  color: #ffffff;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 11px;
+}
+
+.priceFilter .clearFilterButton {
+  background: #eeeeee;
+  color: #555555;
+}
+
+
 
 
 
@@ -215,5 +256,12 @@
 
   .table {
     min-width: 760px;
+  }
+   .priceFilter {
+    flex-wrap: wrap;
+  }
+
+  .priceFilter input {
+    width: 120px;
   }
 }
