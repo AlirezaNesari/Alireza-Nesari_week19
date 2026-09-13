@@ -13,6 +13,7 @@ function Register() {
   const {
     register,
     handleSubmit,
+    setError,
     formState: { errors, isSubmitting },
   } = useForm({
     resolver: yupResolver(registerSchema),
@@ -35,17 +36,31 @@ function Register() {
       navigate("/login");
     } catch (error) {
       console.error(error);
+
+      setError("root", {
+        message:
+          error.response?.data?.message ||
+          "ثبت نام با خطا مواجه شد.",
+      });
     }
   };
 
   return (
     <div className={styles.page} dir="rtl">
-      <h1 className={styles.brand}>بوت کمپ بوتواستارت</h1>
+      <h1 className={styles.brand}>
+        بوت کمپ بوتواستارت
+      </h1>
 
       <div className={styles.card}>
-        <img src={logo} alt="Union" className={styles.logo} />
+        <img
+          src={logo}
+          alt="Union"
+          className={styles.logo}
+        />
 
-        <h2 className={styles.title}>فرم ثبت نام</h2>
+        <h2 className={styles.title}>
+          فرم ثبت نام
+        </h2>
 
         <form
           className={styles.form}
@@ -59,7 +74,9 @@ function Register() {
           />
 
           {errors.username && (
-            <p className={styles.error}>{errors.username.message}</p>
+            <p className={styles.error}>
+              {errors.username.message}
+            </p>
           )}
 
           <input
@@ -70,7 +87,9 @@ function Register() {
           />
 
           {errors.password && (
-            <p className={styles.error}>{errors.password.message}</p>
+            <p className={styles.error}>
+              {errors.password.message}
+            </p>
           )}
 
           <input
@@ -86,12 +105,20 @@ function Register() {
             </p>
           )}
 
+          {errors.root && (
+            <p className={styles.error}>
+              {errors.root.message}
+            </p>
+          )}
+
           <button
             type="submit"
             className={styles.submitButton}
             disabled={isSubmitting}
           >
-            {isSubmitting ? "در حال ثبت نام..." : "ثبت نام"}
+            {isSubmitting
+              ? "در حال ثبت نام..."
+              : "ثبت نام"}
           </button>
         </form>
 

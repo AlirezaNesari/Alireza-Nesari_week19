@@ -11,6 +11,7 @@ function ProductModal({ isOpen, onClose, onSuccess }) {
     register,
     handleSubmit,
     reset,
+    setError,
     formState: { errors, isSubmitting },
   } = useForm({
     resolver: yupResolver(productSchema),
@@ -37,6 +38,12 @@ function ProductModal({ isOpen, onClose, onSuccess }) {
       onClose();
     } catch (error) {
       console.error(error);
+
+      setError("root", {
+        message:
+          error.response?.data?.message ||
+          "ایجاد محصول با خطا مواجه شد.",
+      });
     }
   };
 
@@ -65,12 +72,16 @@ function ProductModal({ isOpen, onClose, onSuccess }) {
             />
 
             {errors.name && (
-              <p className={styles.error}>{errors.name.message}</p>
+              <p className={styles.error}>
+                {errors.name.message}
+              </p>
             )}
           </div>
 
           <div className={styles.field}>
-            <label htmlFor="quantity">تعداد موجودی</label>
+            <label htmlFor="quantity">
+              تعداد موجودی
+            </label>
 
             <input
               id="quantity"
@@ -81,7 +92,9 @@ function ProductModal({ isOpen, onClose, onSuccess }) {
             />
 
             {errors.quantity && (
-              <p className={styles.error}>{errors.quantity.message}</p>
+              <p className={styles.error}>
+                {errors.quantity.message}
+              </p>
             )}
           </div>
 
@@ -97,9 +110,17 @@ function ProductModal({ isOpen, onClose, onSuccess }) {
             />
 
             {errors.price && (
-              <p className={styles.error}>{errors.price.message}</p>
+              <p className={styles.error}>
+                {errors.price.message}
+              </p>
             )}
           </div>
+
+          {errors.root && (
+            <p className={styles.error}>
+              {errors.root.message}
+            </p>
+          )}
 
           <div className={styles.actions}>
             <button
@@ -116,7 +137,9 @@ function ProductModal({ isOpen, onClose, onSuccess }) {
               className={styles.submitButton}
               disabled={isSubmitting}
             >
-              {isSubmitting ? "در حال ایجاد..." : "ایجاد"}
+              {isSubmitting
+                ? "در حال ایجاد..."
+                : "ایجاد"}
             </button>
           </div>
         </form>
