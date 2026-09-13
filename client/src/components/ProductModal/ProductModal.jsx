@@ -6,7 +6,11 @@ import { productSchema } from "../../validations/productSchema";
 
 import styles from "./ProductModal.module.css";
 
-function ProductModal({ isOpen, onClose, onSuccess }) {
+function ProductModal({
+  isOpen,
+  onClose,
+  onSuccess,
+}) {
   const {
     register,
     handleSubmit,
@@ -59,9 +63,13 @@ function ProductModal({ isOpen, onClose, onSuccess }) {
       <div className={styles.modal} dir="rtl">
         <h2>ایجاد محصول جدید</h2>
 
-        <form onSubmit={handleSubmit(handleFormSubmit)}>
+        <form
+          onSubmit={handleSubmit(handleFormSubmit)}
+        >
           <div className={styles.field}>
-            <label htmlFor="name">نام کالا</label>
+            <label htmlFor="name">
+              نام کالا
+            </label>
 
             <input
               id="name"
@@ -87,6 +95,7 @@ function ProductModal({ isOpen, onClose, onSuccess }) {
               id="quantity"
               type="number"
               placeholder="تعداد"
+              min="0"
               disabled={isSubmitting}
               {...register("quantity")}
             />
@@ -99,12 +108,16 @@ function ProductModal({ isOpen, onClose, onSuccess }) {
           </div>
 
           <div className={styles.field}>
-            <label htmlFor="price">قیمت</label>
+            <label htmlFor="price">
+              قیمت
+            </label>
 
             <input
               id="price"
               type="number"
               placeholder="قیمت"
+              min="0"
+              step="any"
               disabled={isSubmitting}
               {...register("price")}
             />

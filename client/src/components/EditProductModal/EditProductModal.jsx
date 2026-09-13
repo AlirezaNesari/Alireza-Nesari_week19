@@ -78,7 +78,9 @@ function EditProductModal({
       <div className={styles.modal} dir="rtl">
         <h2>ویرایش اطلاعات</h2>
 
-        <form onSubmit={handleSubmit(submitHandler)}>
+        <form
+          onSubmit={handleSubmit(submitHandler)}
+        >
           <div className={styles.field}>
             <label htmlFor="edit-name">
               نام کالا

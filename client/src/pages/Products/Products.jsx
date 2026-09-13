@@ -1,5 +1,6 @@
-
 import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
 import { useSearchParams } from "react-router-dom";
 
 import ProductModal from "../../components/ProductModal/ProductModal";
@@ -14,6 +15,8 @@ import {
   deleteProduct,
   getProducts,
 } from "../../services/productService";
+
+import { productFilterSchema } from "../../validations/productFilterSchema";
 
 import styles from "./Products.module.css";
 
@@ -41,6 +44,26 @@ function Products() {
   const search = searchParams.get("name") || "";
   const minPrice = searchParams.get("minPrice") || "";
   const maxPrice = searchParams.get("maxPrice") || "";
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors: filterErrors },
+  } = useForm({
+    resolver: yupResolver(productFilterSchema),
+    defaultValues: {
+      minPrice,
+      maxPrice,
+    },
+  });
+
+  useEffect(() => {
+    reset({
+      minPrice,
+      maxPrice,
+    });
+  }, [minPrice, maxPrice, reset]);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -72,7 +95,13 @@ function Products() {
     };
 
     fetchProducts();
-  }, [page, search, minPrice, maxPrice, refreshKey]);
+  }, [
+    page,
+    search,
+    minPrice,
+    maxPrice,
+    refreshKey,
+  ]);
 
   const openDeleteModal = (product) => {
     setSelectedProduct(product);
@@ -102,7 +131,10 @@ function Products() {
   };
 
   const changePage = (newPage) => {
-    if (newPage < 1 || newPage > pagination.totalPages) {
+    if (
+      newPage < 1 ||
+      newPage > pagination.totalPages
+    ) {
       return;
     }
 
@@ -113,24 +145,29 @@ function Products() {
     setSearchParams(params);
   };
 
-  const handlePriceFilter = (event) => {
-    event.preventDefault();
-
-    const formData = new FormData(event.currentTarget);
-
-    const newMinPrice = formData.get("minPrice")?.trim() || "";
-    const newMaxPrice = formData.get("maxPrice")?.trim() || "";
-
+  const handlePriceFilter = (data) => {
     const params = new URLSearchParams(searchParams);
 
-    if (newMinPrice) {
-      params.set("minPrice", newMinPrice);
+    if (
+      data.minPrice !== undefined &&
+      data.minPrice !== ""
+    ) {
+      params.set(
+        "minPrice",
+        String(data.minPrice)
+      );
     } else {
       params.delete("minPrice");
     }
 
-    if (newMaxPrice) {
-      params.set("maxPrice", newMaxPrice);
+    if (
+      data.maxPrice !== undefined &&
+      data.maxPrice !== ""
+    ) {
+      params.set(
+        "maxPrice",
+        String(data.maxPrice)
+      );
     } else {
       params.delete("maxPrice");
     }
@@ -147,6 +184,11 @@ function Products() {
     params.delete("maxPrice");
 
     params.set("page", "1");
+
+    reset({
+      minPrice: "",
+      maxPrice: "",
+    });
 
     setSearchParams(params);
   };
@@ -175,23 +217,37 @@ function Products() {
 
       <form
         className={styles.priceFilter}
-        onSubmit={handlePriceFilter}
+        onSubmit={handleSubmit(handlePriceFilter)}
       >
-        <input
-          type="number"
-          name="minPrice"
-          placeholder="حداقل قیمت"
-          defaultValue={minPrice}
-          min="0"
-        />
+        <div className={styles.filterField}>
+          <input
+            type="number"
+            placeholder="حداقل قیمت"
+            min="0"
+            {...register("minPrice")}
+          />
 
-        <input
-          type="number"
-          name="maxPrice"
-          placeholder="حداکثر قیمت"
-          defaultValue={maxPrice}
-          min="0"
-        />
+          {filterErrors.minPrice && (
+            <p className={styles.filterError}>
+              {filterErrors.minPrice.message}
+            </p>
+          )}
+        </div>
+
+        <div className={styles.filterField}>
+          <input
+            type="number"
+            placeholder="حداکثر قیمت"
+            min="0"
+            {...register("maxPrice")}
+          />
+
+          {filterErrors.maxPrice && (
+            <p className={styles.filterError}>
+              {filterErrors.maxPrice.message}
+            </p>
+          )}
+        </div>
 
         <button type="submit">
           اعمال فیلتر
@@ -328,7 +384,9 @@ function Products() {
       <EditProductModal
         isOpen={Boolean(selectedEditProduct)}
         product={selectedEditProduct}
-        onClose={() => setSelectedEditProduct(null)}
+        onClose={() =>
+          setSelectedEditProduct(null)
+        }
         onSuccess={() => {
           setSelectedEditProduct(null);
           setRefreshKey((current) => current + 1);
@@ -337,7 +395,9 @@ function Products() {
 
       <ProductModal
         isOpen={isProductModalOpen}
-        onClose={() => setIsProductModalOpen(false)}
+        onClose={() =>
+          setIsProductModalOpen(false)
+        }
         onSuccess={() =>
           setRefreshKey((current) => current + 1)
         }
@@ -347,4 +407,3 @@ function Products() {
 }
 
 export default Products;
-

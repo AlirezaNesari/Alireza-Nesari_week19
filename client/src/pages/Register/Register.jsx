@@ -29,7 +29,7 @@ function Register() {
   const submitHandler = async (data) => {
     try {
       await registerUser({
-        username: data.username,
+        username: data.username.trim(),
         password: data.password,
       });
 

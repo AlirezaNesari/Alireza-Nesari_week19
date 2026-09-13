@@ -1,40 +1,68 @@
-import { useEffect, useState } from "react";
-import { Outlet, useNavigate, useSearchParams } from "react-router-dom";
+import { useEffect } from "react";
+import { useForm } from "react-hook-form";
+import {
+  Outlet,
+  useNavigate,
+  useSearchParams,
+} from "react-router-dom";
 
 import ali from "../assets/ali.png";
 import { useAuth } from "../context/AuthContext";
+
 import styles from "./AdminLayout.module.css";
 
 function AdminLayout() {
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams, setSearchParams] =
+    useSearchParams();
+
   const navigate = useNavigate();
   const { logout } = useAuth();
 
-  const [searchValue, setSearchValue] = useState(
-    searchParams.get("name") || ""
-  );
+  const {
+    register,
+    watch,
+    reset,
+  } = useForm({
+    defaultValues: {
+      name: searchParams.get("name") || "",
+    },
+  });
+
+  const searchValue = watch("name");
 
   useEffect(() => {
-    setSearchValue(searchParams.get("name") || "");
-  }, [searchParams]);
+    reset({
+      name: searchParams.get("name") || "",
+    });
+  }, [searchParams, reset]);
 
-  const handleSearchChange = (event) => {
-    const value = event.target.value;
+  useEffect(() => {
+    const value = searchValue.trim();
+    const currentSearch =
+      searchParams.get("name") || "";
 
-    setSearchValue(value);
+    if (value === currentSearch) {
+      return;
+    }
 
     const params = new URLSearchParams(searchParams);
 
-    if (value.trim()) {
-      params.set("name", value.trim());
+    if (value) {
+      params.set("name", value);
     } else {
       params.delete("name");
     }
 
     params.set("page", "1");
 
-    setSearchParams(params);
-  };
+    setSearchParams(params, {
+      replace: true,
+    });
+  }, [
+    searchValue,
+    searchParams,
+    setSearchParams,
+  ]);
 
   const handleLogout = () => {
     logout();
@@ -45,13 +73,14 @@ function AdminLayout() {
     <div className={styles.layout} dir="rtl">
       <header className={styles.header}>
         <div className={styles.searchBox}>
-          <span className={styles.searchIcon}>⌕</span>
+          <span className={styles.searchIcon}>
+            ⌕
+          </span>
 
           <input
             type="text"
             placeholder="جستجو کالا"
-            value={searchValue}
-            onChange={handleSearchChange}
+            {...register("name")}
           />
         </div>
 
