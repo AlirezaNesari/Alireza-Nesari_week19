@@ -1,6 +1,4 @@
-* {
-  font-family: Vazirmatn;
-}
+
 .page {
   width: 100%;
 }
@@ -28,12 +26,8 @@
 .setting {
   width: 23px;
   height: 23px;
-  padding: 0;
-  border: none;
-  background: transparent;
-  color: #555;
-  cursor: pointer;
-  font-size: 16px;
+  display: block;
+  object-fit: contain;
 }
 
 .addButton {
@@ -88,24 +82,23 @@
 .table td:nth-child(5) {
   width: 10%;
   text-align: center;
-
 }
 
 .table th:nth-child(4),
 .table td:nth-child(4) {
-  width: 38%;
+  width: 34%;
   text-align: center;
 }
 
 .table th:nth-child(3),
 .table td:nth-child(3) {
-  width:18%;
+  width: 18%;
   text-align: center;
 }
 
 .table th:nth-child(2),
 .table td:nth-child(2) {
-  width: 18%;
+  width: 20%;
   text-align: center;
 }
 
@@ -257,7 +250,8 @@
   .table {
     min-width: 760px;
   }
-   .priceFilter {
+
+  .priceFilter {
     flex-wrap: wrap;
   }
 
