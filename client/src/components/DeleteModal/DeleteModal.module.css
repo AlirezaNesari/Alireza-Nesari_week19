@@ -17,7 +17,6 @@
 .modal {
   width: 345px;
   max-width: 100%;
-
   min-height: 245px;
 
   padding: 28px 28px 24px;
@@ -34,33 +33,23 @@
 }
 
 .icon {
-  width: 90px;
-  height: 99px;
+  width: 58px;
+  height: 58px;
 
   margin-bottom: 25px;
 
-  
-
- 
-
-  
+  display: flex;
   align-items: center;
   justify-content: center;
-
-
-
-
 }
 
-.icon span {
-  color: #ffffff;
+.icon img {
+  width: 58px;
+  height: 58px;
 
-  font-size: 32px;
-  font-weight: 700;
+  display: block;
 
-  line-height: 1;
-
-  transform: rotate(8deg);
+  object-fit: contain;
 }
 
 .message {
@@ -126,4 +115,9 @@
 
 .deleteButton:hover {
   background: #ed3153;
+}
+
+.actions button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
