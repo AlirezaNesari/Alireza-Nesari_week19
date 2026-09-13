@@ -2,32 +2,32 @@ import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
 import ProductModal from "../../components/ProductModal/ProductModal";
-
 import DeleteModal from "../../components/DeleteModal/DeleteModal";
+import EditProductModal from "../../components/EditProductModal/EditProductModal";
 
 import edit from "../../assets/edit.png";
-
 import trash from "../../assets/trash.png";
-
 import setting from "../../assets/setting.png";
 
-import { deleteProduct, getProducts } from "../../services/productService";
+import {
+  deleteProduct,
+  getProducts,
+} from "../../services/productService";
 
 import styles from "./Products.module.css";
-import EditProductModal from "../../components/EditProductModal/EditProductModal";
 
 function Products() {
   const [searchParams, setSearchParams] = useSearchParams();
 
   const [products, setProducts] = useState([]);
-
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [selectedEditProduct, setSelectedEditProduct] = useState(null);
+
   const [isProductModalOpen, setIsProductModalOpen] = useState(false);
+
   const [refreshKey, setRefreshKey] = useState(0);
   const [deleteError, setDeleteError] = useState("");
 
-  const [page, setPage] = useState(Number(searchParams.get("page")) || 1);
   const [pagination, setPagination] = useState({
     totalProducts: 0,
     totalPages: 1,
@@ -35,20 +35,12 @@ function Products() {
   });
 
   const [loading, setLoading] = useState(true);
-
   const [error, setError] = useState("");
 
+  const page = Number(searchParams.get("page")) || 1;
   const search = searchParams.get("name") || "";
-
   const minPrice = searchParams.get("minPrice") || "";
-
   const maxPrice = searchParams.get("maxPrice") || "";
-
-  useEffect(() => {
-    const currentPage = Number(searchParams.get("page")) || 1;
-
-    setPage(currentPage);
-  }, [searchParams]);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -59,15 +51,9 @@ function Products() {
         const data = await getProducts({
           page,
           limit: 10,
-          ...(search && {
-            name: search,
-          }),
-          ...(minPrice && {
-            minPrice,
-          }),
-          ...(maxPrice && {
-            maxPrice,
-          }),
+          ...(search && { name: search }),
+          ...(minPrice && { minPrice }),
+          ...(maxPrice && { maxPrice }),
         });
 
         setProducts(data.data);
@@ -90,10 +76,12 @@ function Products() {
 
   const openDeleteModal = (product) => {
     setSelectedProduct(product);
+    setDeleteError("");
   };
 
   const closeDeleteModal = () => {
     setSelectedProduct(null);
+    setDeleteError("");
   };
 
   const confirmDelete = async () => {
@@ -105,6 +93,7 @@ function Products() {
       await deleteProduct(selectedProduct.id);
 
       closeDeleteModal();
+
       setRefreshKey((current) => current + 1);
     } catch (error) {
       console.error(error);
@@ -128,7 +117,11 @@ function Products() {
     <div className={styles.page}>
       <div className={styles.pageHeader}>
         <div className={styles.titleWrapper}>
-          <img src={setting} alt="setting" className={styles.setting} />
+          <img
+            src={setting}
+            alt="setting"
+            className={styles.setting}
+          />
 
           <h1>مدیریت کالا</h1>
         </div>
@@ -143,10 +136,16 @@ function Products() {
       </div>
 
       {loading && (
-        <div className={styles.message}>در حال دریافت محصولات...</div>
+        <div className={styles.message}>
+          در حال دریافت محصولات...
+        </div>
       )}
 
-      {error && <div className={styles.error}>{error}</div>}
+      {error && (
+        <div className={styles.error}>
+          {error}
+        </div>
+      )}
 
       {!loading && !error && (
         <>
@@ -178,17 +177,27 @@ function Products() {
                         <button
                           type="button"
                           className={styles.editButton}
-                          onClick={() => setSelectedEditProduct(product)}
+                          onClick={() =>
+                            setSelectedEditProduct(product)
+                          }
                         >
-                          <img src={edit} alt="edit" />
+                          <img
+                            src={edit}
+                            alt="edit"
+                          />
                         </button>
 
                         <button
                           type="button"
                           className={styles.deleteButton}
-                          onClick={() => openDeleteModal(product)}
+                          onClick={() =>
+                            openDeleteModal(product)
+                          }
                         >
-                          <img src={trash} alt="trash" />
+                          <img
+                            src={trash}
+                            alt="trash"
+                          />
                         </button>
                       </div>
                     </td>
@@ -197,7 +206,9 @@ function Products() {
 
                 {products.length === 0 && (
                   <tr>
-                    <td colSpan="5">محصولی پیدا نشد.</td>
+                    <td colSpan="5">
+                      محصولی پیدا نشد.
+                    </td>
                   </tr>
                 )}
               </tbody>
@@ -207,13 +218,19 @@ function Products() {
           <div className={styles.pagination}>
             {Array.from(
               { length: pagination.totalPages },
-              (_, index) => index + 1,
+              (_, index) => index + 1
             ).map((pageNumber) => (
               <button
                 key={pageNumber}
                 type="button"
-                className={page === pageNumber ? styles.activePage : ""}
-                onClick={() => changePage(pageNumber)}
+                className={
+                  page === pageNumber
+                    ? styles.activePage
+                    : ""
+                }
+                onClick={() =>
+                  changePage(pageNumber)
+                }
               >
                 {pageNumber}
               </button>
@@ -221,7 +238,13 @@ function Products() {
           </div>
         </>
       )}
-      {deleteError && <div className={styles.error}>{deleteError}</div>}
+
+      {deleteError && (
+        <div className={styles.error}>
+          {deleteError}
+        </div>
+      )}
+
       <DeleteModal
         isOpen={Boolean(selectedProduct)}
         productName={selectedProduct?.name}
@@ -242,7 +265,9 @@ function Products() {
       <ProductModal
         isOpen={isProductModalOpen}
         onClose={() => setIsProductModalOpen(false)}
-        onSuccess={() => setRefreshKey((current) => current + 1)}
+        onSuccess={() =>
+          setRefreshKey((current) => current + 1)
+        }
       />
     </div>
   );
