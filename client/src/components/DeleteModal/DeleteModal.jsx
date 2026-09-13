@@ -1,7 +1,7 @@
 import { useState } from "react";
 import styles from "./DeleteModal.module.css";
 
-import logo from "../../assets/close.png";
+import logo from "../../assets/Close.png";
 
 function DeleteModal({ isOpen, onClose, onConfirm, productName }) {
   const [loading, setLoading] = useState(false);

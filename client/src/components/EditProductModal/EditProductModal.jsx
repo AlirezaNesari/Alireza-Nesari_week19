@@ -1,85 +1,75 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+
 import { updateProduct } from "../../services/productService";
+import { productSchema } from "../../validations/productSchema";
+
 import styles from "./EditProductModal.module.css";
 
-function EditProductModal({ isOpen, product, onClose, onSuccess }) {
-  const [formData, setFormData] = useState({
-    name: "",
-    quantity: "",
-    price: "",
+function EditProductModal({
+  isOpen,
+  product,
+  onClose,
+  onSuccess,
+}) {
+  const {
+    register,
+    handleSubmit,
+    reset,
+    setError,
+    formState: { errors, isSubmitting },
+  } = useForm({
+    resolver: yupResolver(productSchema),
+    defaultValues: {
+      name: "",
+      quantity: "",
+      price: "",
+    },
   });
-
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (!product) return;
 
-    setFormData({
+    reset({
       name: product.name || "",
       quantity: product.quantity ?? "",
       price: product.price ?? "",
     });
+  }, [product, reset]);
 
-    setError("");
-  }, [product]);
+  if (!isOpen || !product) {
+    return null;
+  }
 
-  if (!isOpen || !product) return null;
-
-  const handleChange = (event) => {
-    const { name, value } = event.target;
-
-    setFormData((previous) => ({
-      ...previous,
-      [name]: value,
-    }));
-  };
-
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-
-    if (!formData.name.trim()) {
-      setError("نام کالا را وارد کنید.");
-      return;
-    }
-
-    if (
-      formData.quantity === "" ||
-      Number(formData.quantity) < 0 ||
-      !Number.isInteger(Number(formData.quantity))
-    ) {
-      setError("تعداد موجودی معتبر نیست.");
-      return;
-    }
-
-    if (formData.price === "" || Number(formData.price) <= 0) {
-      setError("قیمت معتبر نیست.");
-      return;
-    }
-
+  const submitHandler = async (data) => {
     try {
-      setLoading(true);
-      setError("");
-
       await updateProduct(product.id, {
-        name: formData.name.trim(),
-        quantity: Number(formData.quantity),
-        price: Number(formData.price),
+        name: data.name.trim(),
+        quantity: Number(data.quantity),
+        price: Number(data.price),
       });
+
+      reset();
 
       onSuccess();
     } catch (error) {
       console.error(error);
-      setError("ویرایش محصول با خطا مواجه شد.");
-    } finally {
-      setLoading(false);
+
+      setError("root", {
+        message:
+          error.response?.data?.message ||
+          "ویرایش محصول با خطا مواجه شد.",
+      });
     }
   };
 
   const handleClose = () => {
-    if (loading) return;
+    if (isSubmitting) {
+      return;
+    }
 
-    setError("");
+    reset();
     onClose();
   };
 
@@ -88,67 +78,94 @@ function EditProductModal({ isOpen, product, onClose, onSuccess }) {
       <div className={styles.modal} dir="rtl">
         <h2>ویرایش اطلاعات</h2>
 
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit(submitHandler)}>
           <div className={styles.field}>
-            <label htmlFor="edit-name">نام کالا</label>
+            <label htmlFor="edit-name">
+              نام کالا
+            </label>
 
             <input
               id="edit-name"
-              name="name"
               type="text"
               placeholder="نام کالا"
-              value={formData.name}
-              onChange={handleChange}
-              disabled={loading}
+              disabled={isSubmitting}
+              {...register("name")}
             />
+
+            {errors.name && (
+              <p className={styles.error}>
+                {errors.name.message}
+              </p>
+            )}
           </div>
 
           <div className={styles.field}>
-            <label htmlFor="edit-quantity">تعداد موجودی</label>
+            <label htmlFor="edit-quantity">
+              موجودی
+            </label>
 
             <input
               id="edit-quantity"
-              name="quantity"
               type="number"
-              placeholder="تعداد"
-              value={formData.quantity}
-              onChange={handleChange}
-              disabled={loading}
+              min="0"
+              placeholder="موجودی"
+              disabled={isSubmitting}
+              {...register("quantity")}
             />
+
+            {errors.quantity && (
+              <p className={styles.error}>
+                {errors.quantity.message}
+              </p>
+            )}
           </div>
 
           <div className={styles.field}>
-            <label htmlFor="edit-price">قیمت</label>
+            <label htmlFor="edit-price">
+              قیمت
+            </label>
 
             <input
               id="edit-price"
-              name="price"
               type="number"
+              min="0"
+              step="any"
               placeholder="قیمت"
-              value={formData.price}
-              onChange={handleChange}
-              disabled={loading}
+              disabled={isSubmitting}
+              {...register("price")}
             />
+
+            {errors.price && (
+              <p className={styles.error}>
+                {errors.price.message}
+              </p>
+            )}
           </div>
 
-          {error && <p className={styles.error}>{error}</p>}
+          {errors.root && (
+            <p className={styles.error}>
+              {errors.root.message}
+            </p>
+          )}
 
           <div className={styles.actions}>
             <button
               type="button"
               className={styles.cancelButton}
               onClick={handleClose}
-              disabled={loading}
+              disabled={isSubmitting}
             >
-              انصراف
+              لغو
             </button>
 
             <button
               type="submit"
               className={styles.submitButton}
-              disabled={loading}
+              disabled={isSubmitting}
             >
-              {loading ? "در حال ذخیره..." : "ثبت اطلاعات جدید"}
+              {isSubmitting
+                ? "در حال ذخیره..."
+                : "ذخیره تغییرات"}
             </button>
           </div>
         </form>

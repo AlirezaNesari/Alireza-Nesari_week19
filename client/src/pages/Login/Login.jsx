@@ -1,79 +1,114 @@
-import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
 import { useNavigate } from "react-router-dom";
 
 import { loginUser } from "../../services/authService";
 import { useAuth } from "../../context/AuthContext";
+
+import { loginSchema } from "../../validations/authSchema";
+
 import logo from "../../assets/Union.png";
 import styles from "./Login.module.css";
 
 function Login() {
-  const [formData, setFormData] = useState({
-    username: "",
-    password: "",
+  const {
+    register,
+    handleSubmit,
+    setError,
+    formState: { errors, isSubmitting },
+  } = useForm({
+    resolver: yupResolver(loginSchema),
+    defaultValues: {
+      username: "",
+      password: "",
+    },
   });
-
-  const [error, setError] = useState("");
 
   const { login } = useAuth();
   const navigate = useNavigate();
 
-  const changeHandler = (event) => {
-    const { name, value } = event.target;
-
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
-  const submitHandler = async (event) => {
-    event.preventDefault();
-
+  const submitHandler = async (data) => {
     try {
-      setError("");
+      const response = await loginUser({
+        username: data.username.trim(),
+        password: data.password,
+      });
 
-      const data = await loginUser(formData);
-
-      login(data.token);
+      login(response.token);
 
       navigate("/products");
     } catch (error) {
-      setError(
-        error.response?.data?.message || "نام کاربری یا رمز عبور اشتباه است.",
-      );
+      console.error(error);
+
+      setError("root", {
+        message:
+          error.response?.data?.message ||
+          "نام کاربری یا رمز عبور اشتباه است.",
+      });
     }
   };
 
   return (
     <div className={styles.page} dir="rtl">
-      <h1 className={styles.brand}>بوت کمپ بوتواستارت</h1>
+      <h1 className={styles.brand}>
+        بوت کمپ بوتواستارت
+      </h1>
 
       <div className={styles.card}>
-        <img src={logo} alt="Union" className={styles.logo} />
+        <img
+          src={logo}
+          alt="Union"
+          className={styles.logo}
+        />
 
-        <h2 className={styles.title}>فرم ورود</h2>
+        <h2 className={styles.title}>
+          فرم ورود
+        </h2>
 
-        <form className={styles.form} onSubmit={submitHandler}>
+        <form
+          className={styles.form}
+          onSubmit={handleSubmit(submitHandler)}
+        >
           <input
             type="text"
-            name="username"
             placeholder="نام کاربری"
-            value={formData.username}
-            onChange={changeHandler}
+            disabled={isSubmitting}
+            {...register("username")}
           />
+
+          {errors.username && (
+            <p className={styles.error}>
+              {errors.username.message}
+            </p>
+          )}
 
           <input
             type="password"
-            name="password"
             placeholder="رمز عبور"
-            value={formData.password}
-            onChange={changeHandler}
+            disabled={isSubmitting}
+            {...register("password")}
           />
 
-          {error && <p className={styles.error}>{error}</p>}
+          {errors.password && (
+            <p className={styles.error}>
+              {errors.password.message}
+            </p>
+          )}
 
-          <button type="submit" className={styles.submitButton}>
-            ورود
+          {errors.root && (
+            <p className={styles.error}>
+              {errors.root.message}
+            </p>
+          )}
+
+          <button
+            type="submit"
+            className={styles.submitButton}
+            disabled={isSubmitting}
+          >
+            {isSubmitting
+              ? "در حال ورود..."
+              : "ورود"}
           </button>
         </form>
 

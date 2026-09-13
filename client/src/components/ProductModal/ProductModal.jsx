@@ -1,89 +1,49 @@
-import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
 
 import { createProduct } from "../../services/productService";
+import { productSchema } from "../../validations/productSchema";
 
 import styles from "./ProductModal.module.css";
 
 function ProductModal({ isOpen, onClose, onSuccess }) {
-  const [formData, setFormData] = useState({
-    name: "",
-    quantity: "",
-    price: "",
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors, isSubmitting },
+  } = useForm({
+    resolver: yupResolver(productSchema),
+    defaultValues: {
+      name: "",
+      quantity: "",
+      price: "",
+    },
   });
-
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
 
   if (!isOpen) return null;
 
-  const handleChange = (event) => {
-    const { name, value } = event.target;
-
-    setFormData((previous) => ({
-      ...previous,
-      [name]: value,
-    }));
-  };
-
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-
-    if (!formData.name.trim()) {
-      setError("نام کالا را وارد کنید.");
-      return;
-    }
-
-    if (
-      formData.quantity === "" ||
-      Number(formData.quantity) < 0 ||
-      !Number.isInteger(Number(formData.quantity))
-    ) {
-      setError("تعداد موجودی معتبر نیست.");
-      return;
-    }
-
-    if (formData.price === "" || Number(formData.price) <= 0) {
-      setError("قیمت معتبر نیست.");
-      return;
-    }
-
+  const handleFormSubmit = async (data) => {
     try {
-      setLoading(true);
-      setError("");
-
       await createProduct({
-        name: formData.name.trim(),
-        quantity: Number(formData.quantity),
-        price: Number(formData.price),
+        name: data.name.trim(),
+        quantity: Number(data.quantity),
+        price: Number(data.price),
       });
 
-      setFormData({
-        name: "",
-        quantity: "",
-        price: "",
-      });
+      reset();
 
       onSuccess();
       onClose();
     } catch (error) {
       console.error(error);
-      setError("ایجاد محصول با خطا مواجه شد.");
-    } finally {
-      setLoading(false);
     }
   };
 
   const handleClose = () => {
-    if (loading) return;
+    if (isSubmitting) return;
 
-    setError("");
-
-    setFormData({
-      name: "",
-      quantity: "",
-      price: "",
-    });
-
+    reset();
     onClose();
   };
 
@@ -92,19 +52,21 @@ function ProductModal({ isOpen, onClose, onSuccess }) {
       <div className={styles.modal} dir="rtl">
         <h2>ایجاد محصول جدید</h2>
 
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit(handleFormSubmit)}>
           <div className={styles.field}>
             <label htmlFor="name">نام کالا</label>
 
             <input
               id="name"
-              name="name"
               type="text"
               placeholder="نام کالا"
-              value={formData.name}
-              onChange={handleChange}
-              disabled={loading}
+              disabled={isSubmitting}
+              {...register("name")}
             />
+
+            {errors.name && (
+              <p className={styles.error}>{errors.name.message}</p>
+            )}
           </div>
 
           <div className={styles.field}>
@@ -112,13 +74,15 @@ function ProductModal({ isOpen, onClose, onSuccess }) {
 
             <input
               id="quantity"
-              name="quantity"
               type="number"
               placeholder="تعداد"
-              value={formData.quantity}
-              onChange={handleChange}
-              disabled={loading}
+              disabled={isSubmitting}
+              {...register("quantity")}
             />
+
+            {errors.quantity && (
+              <p className={styles.error}>{errors.quantity.message}</p>
+            )}
           </div>
 
           <div className={styles.field}>
@@ -126,23 +90,23 @@ function ProductModal({ isOpen, onClose, onSuccess }) {
 
             <input
               id="price"
-              name="price"
               type="number"
               placeholder="قیمت"
-              value={formData.price}
-              onChange={handleChange}
-              disabled={loading}
+              disabled={isSubmitting}
+              {...register("price")}
             />
-          </div>
 
-          {error && <p className={styles.error}>{error}</p>}
+            {errors.price && (
+              <p className={styles.error}>{errors.price.message}</p>
+            )}
+          </div>
 
           <div className={styles.actions}>
             <button
               type="button"
               className={styles.cancelButton}
               onClick={handleClose}
-              disabled={loading}
+              disabled={isSubmitting}
             >
               انصراف
             </button>
@@ -150,9 +114,9 @@ function ProductModal({ isOpen, onClose, onSuccess }) {
             <button
               type="submit"
               className={styles.submitButton}
-              disabled={loading}
+              disabled={isSubmitting}
             >
-              {loading ? "در حال ایجاد..." : "ایجاد"}
+              {isSubmitting ? "در حال ایجاد..." : "ایجاد"}
             </button>
           </div>
         </form>
